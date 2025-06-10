@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Spidey vs Villains RPG</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+    }
+    #userPanel {
+      width: 250px;
+      background: #222;
+      color: white;
+      padding: 10px;
+    }
+    #userPanel img {
+      width: 100%;
+      border-radius: 10px;
+    }
+    .healthBar {
+      height: 20px;
+      background: green;
+      border-radius: 5px;
+    }
+    .yellow { background: yellow; }
+    .red { background: red; }
+    #cityArea {
+      flex-grow: 1;
+      background: url('city_bg.jpg') no-repeat center center;
+      background-size: cover;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 20px;
+    }
+    .userCard {
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 50%;
+      width: 120px;
+      height: 120px;
+      text-align: center;
+      padding: 10px;
+      position: relative;
+    }
+    .userCard img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+    }
+    .userCard button {
+      position: absolute;
+      bottom: 5px;
+      left: 10px;
+      right: 10px;
+      padding: 5px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div id="userPanel">
+    <img src="hero.png" alt="personaje" />
+    <p>💰 Oro: <span id="gold">0</span></p>
+    <p>💎 Gemas: <span id="gems">0</span></p>
+    <p>❤️ Salud:</p>
+    <div class="healthBar" id="healthBar"></div>
+  </div>
+  <div id="cityArea"></div>
+
+  <script>
+    let currentUser = sessionStorage.getItem("currentUser");
+    const allUsers = JSON.parse(localStorage.getItem("users") || "{}");
+
+    function loadUserPanel() {
+      const user = allUsers[currentUser];
+      document.getElementById("gold").textContent = user.gold || 0;
+      document.getElementById("gems").textContent = user.gems || 0;
+      let barColor = "green";
+      if (user.hp < user.maxHp * 0.5) barColor = "yellow";
+      if (user.hp < user.maxHp * 0.2) barColor = "red";
+      const bar = document.getElementById("healthBar");
+      bar.style.width = (user.hp / user.maxHp) * 100 + "%";
+      bar.className = "healthBar " + barColor;
+    }
+
+    function loadCityUsers() {
+      const container = document.getElementById("cityArea");
+      for (let username in allUsers) {
+        if (username === currentUser) continue;
+        const div = document.createElement("div");
+        div.className = "userCard";
+        div.innerHTML = \`
+          <img src="hero.png" alt="user" />
+          <p>\${username}</p>
+          <button onclick="alert('Desafiaste a \${username}')">⚔️ Desafiar</button>
+        \`;
+        container.appendChild(div);
+      }
+    }
+
+    loadUserPanel();
+    loadCityUsers();
+  </script>
+</body>
+</html>
